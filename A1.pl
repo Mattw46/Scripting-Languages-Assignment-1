@@ -28,6 +28,24 @@ sub process {
   }
 }
 
+sub header {
+	
+}
+
+# code requirement
+
+sub list {
+
+}
+
+sub text {
+
+}
+
+sub links {
+
+}
+
 sub transformH1 { #catch 1 hash symbol
   print "found # \n";
   $_ =~ s/#/<h1>/;
