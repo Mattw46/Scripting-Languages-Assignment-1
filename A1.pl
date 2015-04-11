@@ -28,8 +28,17 @@ sub process {
     #}
     #############################################################
     
-    if ($_ =~ /#/) {
+    if ($_ =~ /#/) { # headers
     	$_ = &header($_);
+    }
+    elsif ($_ =~ /\*[a-zA-Z]\*/) { # emphasis & bold
+		$_ = &text($_);
+    }
+    elsif ($_ =~ /\*/ || $_ =~ /[0-9]\./) { # Lists
+		$_ = &list($_);
+    }
+    elsif ($_ =~ /\[{a-zA-Z}+\]/) { # links
+		$_ = &links($_);
     }
     
     #}
@@ -105,36 +114,34 @@ sub header { # need to consider check for space or newline at end
 	}
 }
 
-sub transformH1 { #catch 1 hash symbol
-  print "found # \n";
-  $_ =~ s/#/<h1>/;
-  return $_;
-}
-
-sub transformH2 { # catch 2 hash symbols
-  print "found ## \n";
-  $_ =~ s/##/<h2>/;
-  return $_;
-}
-
-sub transformH3 { # catch all with > 3 hash symbols
-  print "found ### \n";
-  $_ =~ s/###/<h3>/;
-  return $_;
-}
-
 # code requirement
 
 sub list {
-
+	return $_;
 }
 
 sub text {
-
+	if ($_ =~ /\*[a-zA-Z]+\*/) {
+		#print "matched on \*text\* \n";
+		$_ =~ s/\*/\<em\>/;
+		$_ =~ s/\*/\<\/em\>/;
+		print $_;
+		return $_;
+	}
+	
+	if ($_ =~ /\*\*[a-zA-Z]+\*\*/) {
+		#print "matched on \*\*text\*\* \n";
+		$_ =~ s/\*\*/\<strong\>/;
+		$_ =~ s/\*\*/\<\/strong\>/;
+		print $_;
+		return $_;
+	}
+	
+	return $_;
 }
 
 sub links {
-
+	return $_;
 }
 
 ############################
