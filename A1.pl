@@ -42,28 +42,64 @@ sub header { # need to consider check for space or newline at end
 	if ($_ =~ /#{4,}/) {
 		print "match #### or > \n";
 		$_ =~ s/#{4,} /<h3>/;
-		$_ =~ s/\h/<\/h3>/; # need way to find second occurance of space
+		#$_ =~ s/\h/<\/h3>/; # need way to find second occurance of space
+		
+		if ($_ =~ /\h/) {
+			$_ =~ s/\h/<\/h3>/; 
+		}
+		else {
+			chomp($_);
+			$_ = $_."<\/h3>\n";
+		}
+		
 		print $_;
 		return $_;
 	}
 	elsif ($_ =~ /###/) {
 		print "match ### \n";
 		$_ =~ s/### /<h3>/;
-		$_ =~ s/\h/<\/h3>/;
+		#$_ =~ s/\h/<\/h3>/;
+		
+		if ($_ =~ /\h/) {
+			$_ =~ s/\h/<\/h3>/; 
+		}
+		else {
+			chomp($_);
+			$_ = $_."<\/h3>\n";
+		}
+		
 		print $_;
 		return $_;
 	}
 	elsif ($_ =~ /##/) {
 		print "match ## \n";
 		$_ =~ s/## /<h2>/;
-		$_ =~ s/\h/<\/h2>/;
+		#$_ =~ s/\h/<\/h2>/;
+		
+		if ($_ =~ /\h/) {
+			$_ =~ s/\h/<\/h2>/; 
+		}
+		else {
+			chomp($_);
+			$_ = $_."<\/h2>\n";
+		}
+		
 		print $_;
 		return $_;
 	}
 	elsif ($_ =~ /#/) {
    	print "match \n";
    	$_ =~ s/# /<h1>/;
-   	$_ =~ s/\h/<\/h1>/;
+   	#$_ =~ s/\h/<\/h1>/;
+   	
+   	if ($_ =~ /\h/) {
+			$_ =~ s/\h/<\/h1>/; 
+		}
+		else {
+			chomp($_);
+			$_ = $_."<\/h1>\n";
+		}
+   	
    	print $_;
    	return $_;
 	}
