@@ -38,13 +38,34 @@ sub process {
   }
 }
 
-sub header {
+sub header { # need to consider check for space or newline at end
 	if ($_ =~ /#{4,}/) {
 		print "match #### or > \n";
 		$_ =~ s/#{4,} /<h3>/;
 		$_ =~ s/\h/<\/h3>/; # need way to find second occurance of space
 		print $_;
 		return $_;
+	}
+	elsif ($_ =~ /###/) {
+		print "match ### \n";
+		$_ =~ s/### /<h3>/;
+		$_ =~ s/\h/<\/h3>/;
+		print $_;
+		return $_;
+	}
+	elsif ($_ =~ /##/) {
+		print "match ## \n";
+		$_ =~ s/## /<h2>/;
+		$_ =~ s/\h/<\/h2>/;
+		print $_;
+		return $_;
+	}
+	elsif ($_ =~ /#/) {
+   	print "match \n";
+   	$_ =~ s/# /<h1>/;
+   	$_ =~ s/\h/<\/h1>/;
+   	print $_;
+   	return $_;
 	}
 }
 
