@@ -28,17 +28,8 @@ sub process {
     #}
     #############################################################
     
-    if ($_ =~ /#/) { # headers
+    if ($_ =~ /#/) {
     	$_ = &header($_);
-    }
-    elsif ($_ =~ /\*[a-zA-Z]\*/) { # emphasis & bold
-		$_ = &text($_);
-    }
-    elsif ($_ =~ /\*/ || $_ =~ /[0-9]\./) { # Lists
-		$_ = &list($_);
-    }
-    elsif ($_ =~ /\[{a-zA-Z}+\]/) { # links
-		$_ = &links($_);
     }
     
     #}
@@ -49,99 +40,45 @@ sub process {
 
 sub header { # need to consider check for space or newline at end
 	if ($_ =~ /#{4,}/) {
-		print "match #### or > \n";
-		$_ =~ s/#{4,} /<h3>/;
-		#$_ =~ s/\h/<\/h3>/; # need way to find second occurance of space
-		
-		if ($_ =~ /\h/) {
-			$_ =~ s/\h/<\/h3>/; 
-		}
-		else {
-			chomp($_);
-			$_ = $_."<\/h3>\n";
-		}
-		
-		print $_;
+		$_ =~ s/###(#)? ?/<h3>/;
+		$_ =~ s/\s$/<\/h3>/;
 		return $_;
 	}
 	elsif ($_ =~ /###/) {
-		print "match ### \n";
-		$_ =~ s/### /<h3>/;
-		#$_ =~ s/\h/<\/h3>/;
-		
-		if ($_ =~ /\h/) {
-			$_ =~ s/\h/<\/h3>/; 
-		}
-		else {
-			chomp($_);
-			$_ = $_."<\/h3>\n";
-		}
-		
-		print $_;
+		$_ =~ s/### ?/<h3>/;
+		$_ =~ s/\s$/<\/h3>/;
 		return $_;
 	}
 	elsif ($_ =~ /##/) {
-		print "match ## \n";
-		$_ =~ s/## /<h2>/;
-		#$_ =~ s/\h/<\/h2>/;
-		
-		if ($_ =~ /\h/) {
-			$_ =~ s/\h/<\/h2>/; 
-		}
-		else {
-			chomp($_);
-			$_ = $_."<\/h2>\n";
-		}
-		
-		print $_;
-		return $_;
+	    $_ =~ s/## ?/<h2>/;
+		$_ =~ s/\s$/<\/h2>/;
+	    return $_;
 	}
 	elsif ($_ =~ /#/) {
-   	print "match \n";
-   	$_ =~ s/# /<h1>/;
-   	#$_ =~ s/\h/<\/h1>/;
-   	
-   	if ($_ =~ /\h/) {
-			$_ =~ s/\h/<\/h1>/; 
-		}
-		else {
-			chomp($_);
-			$_ = $_."<\/h1>\n";
-		}
-   	
-   	print $_;
-   	return $_;
+		$_ =~ s/# ?/<h1>/;
+		$_ =~ s/\s$/<\/h1>/;
+		return $_;
 	}
+}
+
+sub transformH1 { #catch 1 hash symbol
+  print "found # \n";
+  $_ =~ s/#/<h1>/;
+  return $_;
 }
 
 # code requirement
 
 sub list {
-	return $_;
+
 }
 
 sub text {
-	if ($_ =~ /\*[a-zA-Z]+\*/) {
-		#print "matched on \*text\* \n";
-		$_ =~ s/\*/\<em\>/;
-		$_ =~ s/\*/\<\/em\>/;
-		print $_;
-		return $_;
-	}
-	
-	if ($_ =~ /\*\*[a-zA-Z]+\*\*/) {
-		#print "matched on \*\*text\*\* \n";
-		$_ =~ s/\*\*/\<strong\>/;
-		$_ =~ s/\*\*/\<\/strong\>/;
-		print $_;
-		return $_;
-	}
-	
-	return $_;
+
 }
 
 sub links {
-	return $_;
+
 }
 
 ############################
@@ -168,7 +105,6 @@ open FILE2, ">", $output or die "Could not open output file\n";
 # Closing input files
 close FILE1 or die $!;
 close FILE2 or die $!;
-
 
 
 
