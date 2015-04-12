@@ -12,27 +12,16 @@ my @fileContents;
 sub process {
  foreach (@fileContents) {
     # need to process the text here calling sub routines to process text
-    #print $_;
 
-    #while ($_ =~ /##/) { # add other characters in OR clause # assumes only one header per line
+    while ($_ =~ /^ ?#/ || $_ =~ /\*/) { # add other characters in OR clause # assumes only one header per line
+		if ($_ =~ /#/) {
+			$_ = &header($_);
+		}
+		if ($_ =~ /\*/) {
+			$_ = &text($_);
+		}
     
-    ###############################################################
-    #if ($_ =~ /###/) { # consider split out to new sub if too long
-    #  $_ = &transformH3($_);
-    #}
-    #elsif (($_ =~ /##/) && !($_ =~ /###/)) {
-    #  $_ = &transformH2($_);
-    #}
-    #elsif (($_ =~ /#/) && !($_ =~ /##/)) {
-    #  $_ = &transformH1($_);
-    #}
-    #############################################################
-    
-    if ($_ =~ /#/) {
-    	$_ = &header($_);
     }
-    
-    #}
 
     print FILE2 $_."\n"; # write current line to file
   }
@@ -41,30 +30,24 @@ sub process {
 sub header { # need to consider check for space or newline at end
 	if ($_ =~ /#{4,}/) {
 		$_ =~ s/###(#)? ?/<h3>/;
-		$_ =~ s/\s$/<\/h3>/;
+		$_ =~ s/(\s||\.)$/<\/h3>/;
 		return $_;
 	}
 	elsif ($_ =~ /###/) {
 		$_ =~ s/### ?/<h3>/;
-		$_ =~ s/\s$/<\/h3>/;
+		$_ =~ s/(\s||\.)$/<\/h3>/;
 		return $_;
 	}
 	elsif ($_ =~ /##/) {
 	    $_ =~ s/## ?/<h2>/;
-		$_ =~ s/\s$/<\/h2>/;
+		$_ =~ s/(\s||\.)$/<\/h2>/;
 	    return $_;
 	}
 	elsif ($_ =~ /#/) {
 		$_ =~ s/# ?/<h1>/;
-		$_ =~ s/\s$/<\/h1>/;
+		$_ =~ s/(\s||\.)$/<\/h1>/;
 		return $_;
 	}
-}
-
-sub transformH1 { #catch 1 hash symbol
-  print "found # \n";
-  $_ =~ s/#/<h1>/;
-  return $_;
 }
 
 # code requirement
@@ -74,7 +57,15 @@ sub list {
 }
 
 sub text {
-
+	if ($_ =~ /\*\*/) { # substitute <strong>
+		$_ =~ s/\*\*/<strong>/;
+		$_ =~ s/\*\*/<\/strong>/;
+	}
+	if ($_ =~ /\*/) { # substitute <em>
+		$_ =~ s/\*/<em>/;
+		$_ =~ s/\*/<\/em>/;
+	}
+	return $_;
 }
 
 sub links {
