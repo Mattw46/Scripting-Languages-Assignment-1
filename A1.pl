@@ -9,24 +9,27 @@ my @fileContents;
 # sub routines start here #
 ###########################
 
+# Process each line from text file. calls sub-routine when character is matched
 sub process {
  foreach (@fileContents) {
-    # need to process the text here calling sub routines to process text
-
-    while ($_ =~ /^ ?#/ || $_ =~ /\*/) { # add other characters in OR clause # assumes only one header per line
+	# Test for presence of defined characters, loops until no characters detected
+    while ($_ =~ /^ ?#/ || $_ =~ /\*/ || $_ =~ /\[/) { 
 		if ($_ =~ /#/) {
-			$_ = &header($_);
+			$_ = &header($_); # processed string returned from sub-routine
 		}
 		if ($_ =~ /\*/) {
 			$_ = &text($_);
 		}
-    
+		if ($_ =~ /\*/) {
+			$_ = &links($_);
+		}
     }
 
     print FILE2 $_."\n"; # write current line to file
   }
 }
 
+# processes all lines where a # is matched, applies header tag according to number of occurances.
 sub header { # need to consider check for space or newline at end
 	if ($_ =~ /#{4,}/) {
 		$_ =~ s/###(#)? ?/<h3>/;
@@ -50,12 +53,17 @@ sub header { # need to consider check for space or newline at end
 	}
 }
 
-# code requirement
-
-sub list {
-
+# processes code blocks
+sub codeBlock {
+	# Did not have enough time to implement.
 }
 
+# process lists when a single * proceeds text or number & dot (1.)
+sub list {
+	# Did not have enough time to implement.
+}
+
+# process lines with matching pair of * or ** applied <strong> or <em> tags
 sub text {
 	if ($_ =~ /\*\*/) { # substitute <strong>
 		$_ =~ s/\*\*/<strong>/;
@@ -68,8 +76,30 @@ sub text {
 	return $_;
 }
 
+# processed lines matching a link as defined by '[' character, applies <a href=""> tags
+# text is reordered to match order defined in specification.
 sub links {
+	my $labelStart;
+	my $labelEnd;
+	my $linkStart;
+	my $linkEnd;
+	my $label;
+	my $link;
 
+	$labelStart = index($_, '[') + 1; # extract location of the link text
+	$labelEnd = index($_, ']');
+	$linkStart = index($_, '(') + 1; # extract location of URL
+	$linkEnd = index($_, ')');
+
+	$label = substr($_, $labelStart, ($labelEnd - $labelStart)); # extract link text and URL
+	$link = substr($_, $linkStart, $linkEnd - $linkStart);
+
+	# assemble string back into order as per specification
+	my $temp = 
+		substr($_, 0, $labelStart - 1)."<a href=\"".$link."\">".$label."<\/a>".
+		substr($_, $linkEnd, length($_));
+	$temp =~ s/\)/ /;
+	return $temp;
 }
 
 ############################
@@ -86,11 +116,9 @@ my $output = $ARGV[1]; # might need to check if file exists
 open FILE1, "<", $input or die "Could not open input file\n";
 open FILE2, ">", $output or die "Could not open output file\n";
 
-@fileContents = <FILE1>;
+@fileContents = <FILE1>; # extract file text into an array
 
-&process(@fileContents);
-
-#stuff happens here
+&process(@fileContents); # send array to process sub-routine to process each line
 
 
 # Closing input files
